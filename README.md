@@ -1,110 +1,192 @@
 # Sabhi Digital - Webinar Checklist App
 
-A Next.js web app for tracking webinar setup steps, team completion, and auto-timestamping.
+A comprehensive Next.js web application for tracking team accountability in webinar setup and execution. Manages 32 sequential steps with automatic timestamping, team member assignment, and persistent data storage.
 
 ## Features
 
-✅ **32-Step Checklist** — All webinar setup steps included  
-✅ **Auto-Timestamp** — Records exact date & time when step is completed  
-✅ **Team Tracking** — Shows who completed each step  
-✅ **Progress Bar** — Visual completion percentage  
-✅ **Notes & Issues** — Track issues found during each step  
-✅ **Browser Storage** — Data saved locally (survives page refresh)  
-✅ **Fully Responsive** — Works on mobile, tablet, desktop  
+✅ **32-Step Webinar Checklist** - Complete workflow from pre-webinar setup to post-webinar documentation
+✅ **Multiple Clients** - Track separate checklists for different webinar clients
+✅ **Team Member Tracking** - Assign team members to completed tasks with auto-timestamp
+✅ **Auto-Timestamping** - Automatically records completion time in Indian time format
+✅ **Persistent Storage** - Uses browser localStorage (no database required)
+✅ **Progress Tracking** - Real-time completion percentage and visual progress bar
+✅ **Detailed Notes** - Add notes and document issues for each step
+✅ **Responsive Design** - Works on desktop, tablet, and mobile devices
 
-## Quick Start
+## Tech Stack
 
-### Local Development
+- **Framework**: Next.js 14
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **Storage**: Browser localStorage
+- **Deployment**: Vercel
 
-```bash
-# Install dependencies
-npm install
-
-# Run development server
-npm run dev
-
-# Open browser
-http://localhost:3000
-```
-
-### Build & Deploy to Vercel
-
-```bash
-# Build for production
-npm run build
-
-# Start production server (local testing)
-npm start
-```
-
-Then deploy to Vercel (see deployment section below).
-
-## How to Use
-
-1. **Select Webinar Date** — Pick the date of your webinar
-2. **Select Client** — Choose which client this webinar is for
-3. **See 32 Steps** — All steps appear automatically
-4. **Mark ✓ When Done** — Click checkbox to mark step complete
-5. **Add Details** — Click "Details" to expand and add notes
-6. **Select Team Member** — Choose who completed this step
-7. **Timestamp Auto-Fills** — Date & time recorded automatically
-8. **Data Saved** — Browser stores all data locally
-
-## Folder Structure
+## Project Structure
 
 ```
 webinar-checklist-app/
 ├── app/
-│   ├── page.tsx          # Main page
-│   ├── layout.tsx        # Page layout
-│   └── globals.css       # Global styles
+│   ├── page.tsx           # Main page with date & client selection
+│   ├── layout.tsx         # Root layout with metadata
+│   └── globals.css        # Tailwind CSS imports
 ├── components/
-│   └── Checklist.tsx     # Checklist component
+│   └── Checklist.tsx      # Checklist display component
 ├── lib/
-│   └── data.ts           # Sample clients, team, steps
-├── package.json
-├── tsconfig.json
-├── tailwind.config.ts
-└── README.md
+│   └── data.ts            # Sample data (clients, team members, steps)
+├── public/                # Static assets
+├── package.json           # Dependencies
+├── tsconfig.json          # TypeScript configuration
+├── tailwind.config.ts     # Tailwind CSS configuration
+├── postcss.config.js      # PostCSS configuration
+├── next.config.js         # Next.js configuration
+├── .eslintrc.json         # ESLint configuration
+├── .gitignore             # Git ignore rules
+└── README.md              # This file
 ```
 
-## Environment Setup
+## Installation & Setup
 
-No environment variables needed. App works out of the box.
+### 1. Extract the ZIP file
+```bash
+unzip webinar-checklist-app.zip
+cd webinar-checklist-app
+```
 
-## Deployment to Vercel
+### 2. Install dependencies
+```bash
+npm install
+```
 
-### Step 1: Push to GitHub
+### 3. Run locally
+```bash
+npm run dev
+```
 
+Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+## Usage
+
+1. **Select Webinar Date** - Choose the date of the webinar
+2. **Select Client** - Pick the client from the dropdown (ABC Coaching, XYZ Academy, PQR Institute)
+3. **View 32 Steps** - All 32 webinar setup steps appear automatically
+4. **Mark Steps Complete** - Check the checkbox when a step is completed
+   - ✅ Auto-timestamp is generated (e.g., "15 Sep 2026 03:45 PM")
+   - ✅ Timestamp appears in the step's details section
+5. **Assign Team Member** - Click "Details" to expand and select who completed the task
+6. **Add Notes** - Document any relevant information or issues
+7. **Data Persists** - Refresh the page - your data is automatically saved!
+
+## Key Features Explained
+
+### Auto-Timestamp
+When you mark a step as complete, the system automatically records the exact date and time in Indian time format:
+```
+Day Month Year Hour:Minute AM/PM
+Example: 15 Sep 2026 03:45 PM
+```
+
+### Persistent Storage
+All data is saved to your browser's localStorage. Even if you close and reopen the app, your progress is preserved.
+
+### Multiple Webinars
+Track different webinars simultaneously by selecting different dates and clients. Each combination has its own independent checklist.
+
+### Progress Tracking
+A visual progress bar shows completion percentage in real-time, updated as you check off steps.
+
+## Sample Data
+
+### Clients
+- **ABC Coaching** - Coach: Priya Singh
+- **XYZ Academy** - Coach: Rajesh Kumar
+- **PQR Institute** - Coach: Maya Patel
+
+### Team Members
+- **Pawan** - Team Lead
+- **Yuvraj** - Executive
+- **Priya** - Coordinator
+
+## Deploy to Vercel
+
+### Step 1: Create Git Repository
 ```bash
 git init
 git add .
-git commit -m "Initial commit - webinar checklist app"
-git remote add origin https://github.com/YOUR_USERNAME/webinar-checklist-app.git
+git commit -m "Initial commit"
+```
+
+### Step 2: Push to GitHub
+```bash
 git branch -M main
+git remote add origin https://github.com/YOUR_USERNAME/webinar-checklist-app.git
 git push -u origin main
 ```
 
-### Step 2: Deploy to Vercel
-
-1. Go to https://vercel.com
+### Step 3: Deploy on Vercel
+1. Go to [vercel.com](https://vercel.com)
 2. Click "New Project"
-3. Import your GitHub repository
+3. Connect your GitHub repository
 4. Click "Deploy"
-5. Wait 2-3 minutes
-6. Your app is live! 🚀
+5. Your app will be live in seconds!
 
-## Technologies
+## Testing Checklist
 
-- **Next.js 14** — React framework
-- **TypeScript** — Type safety
-- **Tailwind CSS** — Styling
-- **localStorage** — Browser data storage
+After installation:
+- ✅ Select a webinar date
+- ✅ Select a client name
+- ✅ See all 32 steps appear
+- ✅ Click checkbox on a step
+- ✅ Verify auto-timestamp appears
+- ✅ Click "Details" to expand
+- ✅ Select a team member from dropdown
+- ✅ Add notes and issue descriptions
+- ✅ Refresh page - verify data is saved
+- ✅ Try different date/client combinations
+
+## Troubleshooting
+
+### "Cannot find module '@/components/Checklist'"
+- Verify `components/Checklist.tsx` exists with capital 'C'
+- Check import path: `'@/components/Checklist'`
+
+### "Cannot find module '@/lib/data'"
+- Verify `lib/data.ts` exists
+- Check folder name is `lib` (not `libs`)
+
+### App shows blank page
+- Open browser console: F12
+- Check for errors
+- Verify all files are in correct folders
+
+### Data not saving after refresh
+- Check browser settings allow site data storage
+- Try incognito mode to test
+- Clear browser cache if needed
+
+### Styles look broken
+- Run `npm run dev` again
+- Clear browser cache (Ctrl+Shift+Delete)
+- Restart development server
+
+## Production Checklist
+
+Before deploying to Vercel:
+- [ ] Test all 32 steps load correctly
+- [ ] Test checkmarks work and auto-timestamp appears
+- [ ] Test team member dropdown functionality
+- [ ] Test data persists after refresh
+- [ ] Test with different date/client combinations
+- [ ] Check styling on mobile devices
+- [ ] Verify no console errors in browser
 
 ## Support
 
-For issues or questions, check the error messages in browser console (F12).
+For issues or questions:
+1. Check the troubleshooting section
+2. Review the code comments
+3. Check Next.js documentation: [nextjs.org](https://nextjs.org)
+4. Check Tailwind docs: [tailwindcss.com](https://tailwindcss.com)
 
 ---
 
-Built with ❤️ for Sabhi Digital Webinar Team
+Made for **Sabhi Digital** | Version 1.0
