@@ -52,7 +52,7 @@ export default function Checklist({
       </div>
 
       <div className="divide-y divide-gray-200">
-        {checklist.map((item) => (
+        {checklist.map((item, index) => (
           <div
             key={item.stepNumber}
             className={`transition-all duration-200 ${
@@ -99,9 +99,7 @@ export default function Checklist({
                           </span>
                         )}
                         {item.completedAt && (
-                          <span className="text-gray-500">
-                            {item.completedAt}
-                          </span>
+                          <span className="text-gray-500">{item.completedAt}</span>
                         )}
                       </div>
                     </div>
@@ -128,11 +126,7 @@ export default function Checklist({
                     <select
                       value={item.completedBy}
                       onChange={(e) =>
-                        onStepUpdate(
-                          item.stepNumber,
-                          'completedBy',
-                          e.target.value
-                        )
+                        onStepUpdate(item.stepNumber, 'completedBy', e.target.value)
                       }
                       disabled={!item.completed}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
@@ -184,11 +178,7 @@ export default function Checklist({
                     <textarea
                       value={item.issuesFound}
                       onChange={(e) =>
-                        onStepUpdate(
-                          item.stepNumber,
-                          'issuesFound',
-                          e.target.value
-                        )
+                        onStepUpdate(item.stepNumber, 'issuesFound', e.target.value)
                       }
                       placeholder="Describe any issues encountered..."
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
@@ -205,9 +195,8 @@ export default function Checklist({
       {/* Summary Footer */}
       <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
         <div className="text-sm text-gray-600">
-          <strong>Completed:</strong> {checklist.filter((item) => item.completed)
-            .length}{' '}
-          / {checklist.length} steps
+          <strong>Completed:</strong> {checklist.filter((item) => item.completed).length} /{' '}
+          {checklist.length} steps
         </div>
       </div>
     </div>

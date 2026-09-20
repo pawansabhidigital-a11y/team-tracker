@@ -1,3 +1,5 @@
+// Sample data for the webinar checklist app
+
 export const clients = [
   {
     id: 'C001',
