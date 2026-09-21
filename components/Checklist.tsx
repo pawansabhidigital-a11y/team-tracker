@@ -52,7 +52,7 @@ export default function Checklist({
       </div>
 
       <div className="divide-y divide-gray-200">
-        {checklist.map((item, index) => (
+        {checklist.map((item) => (
           <div
             key={item.stepNumber}
             className={`transition-all duration-200 ${
