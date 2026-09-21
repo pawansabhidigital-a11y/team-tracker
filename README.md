@@ -4,6 +4,8 @@ A comprehensive Next.js web application for tracking team accountability in webi
 
 ## Features
 
+✅ **Login Required** - Every page is behind a sign-in wall enforced in middleware
+✅ **Role-Based Access Control** - Team Lead / Coordinator / Executive, each with different rights
 ✅ **32-Step Webinar Checklist** - Complete workflow from pre-webinar setup to post-webinar documentation
 ✅ **Multiple Clients** - Track separate checklists for different webinar clients
 ✅ **Team Member Tracking** - Assign team members to completed tasks with auto-timestamp
@@ -18,21 +20,80 @@ A comprehensive Next.js web application for tracking team accountability in webi
 - **Framework**: Next.js 14
 - **Language**: TypeScript
 - **Styling**: Tailwind CSS
+- **Auth**: NextAuth (credentials provider, JWT session, bcrypt hashes)
 - **Storage**: Browser localStorage
 - **Deployment**: Vercel
+
+## Authentication & Roles
+
+Every route except `/login` is protected by `middleware.ts`. Unauthenticated
+requests are redirected before any page code runs, so this cannot be bypassed
+from the browser.
+
+### Roles
+
+| Role | Label | Can complete steps | Can add notes | Can assign member | Can reset checklist |
+|---|---|:---:|:---:|:---:|:---:|
+| `admin` | Team Lead | ✅ | ✅ | ✅ | ✅ |
+| `coordinator` | Coordinator | ✅ | ✅ | ✅ | ❌ |
+| `executive` | Executive | ✅ | ✅ | ❌ | ❌ |
+
+Permissions live in [`lib/rbac.ts`](lib/rbac.ts). They are applied in two
+places: the controls are disabled in the UI, and `handleStepUpdate` re-checks
+the permission before changing anything.
+
+### Setting up users
+
+```bash
+npm run gen-auth
+```
+
+This prints one-time passwords plus the two environment variables to set. For a
+custom list:
+
+```bash
+npm run gen-auth -- someone@sabhi.com:admin other@sabhi.com:executive
+```
+
+Put the output in `.env.local` for local development, and in **Vercel → Project
+→ Settings → Environment Variables** for production. See `.env.example`.
+
+> **Note on `APP_USERS`:** it is base64-encoded JSON, not plain JSON. A bcrypt
+> hash contains `$`, and `$NAME` gets expanded away inside `.env` files, which
+> silently truncates the hash and makes every login fail. Base64 sidesteps that.
+
+### Scope of the current setup
+
+Login and RBAC are real and enforced server-side. **Checklist data is not** —
+it still lives in each user's browser `localStorage`, so teammates do not see
+each other's progress and a determined user can edit their own copy. Sharing
+data across the team, and making the record tamper-proof, needs a database and
+API routes. That is a separate piece of work from RBAC.
 
 ## Project Structure
 
 ```
 webinar-checklist-app/
+├── middleware.ts          # Redirects unauthenticated requests to /login
 ├── app/
+│   ├── api/auth/[...nextauth]/route.ts  # NextAuth endpoints
+│   ├── login/page.tsx     # Sign-in page
 │   ├── page.tsx           # Main page with date & client selection
 │   ├── layout.tsx         # Root layout with metadata
 │   └── globals.css        # Tailwind CSS imports
 ├── components/
-│   └── Checklist.tsx      # Checklist display component
+│   ├── Checklist.tsx      # Checklist display component
+│   ├── Header.tsx         # Signed-in user chip + sign out
+│   └── Providers.tsx      # NextAuth session provider
 ├── lib/
+│   ├── auth.ts            # NextAuth options, user lookup
+│   ├── rbac.ts            # Roles and permissions
 │   └── data.ts            # Sample data (clients, team members, steps)
+├── types/
+│   └── next-auth.d.ts     # Adds `role` to the session types
+├── scripts/
+│   └── gen-auth.mjs       # Generates passwords + env vars
+├── .env.example           # Required environment variables
 ├── public/                # Static assets
 ├── package.json           # Dependencies
 ├── tsconfig.json          # TypeScript configuration
@@ -57,7 +118,15 @@ cd webinar-checklist-app
 npm install
 ```
 
-### 3. Run locally
+### 3. Create your sign-in credentials
+```bash
+npm run gen-auth
+```
+Copy `NEXTAUTH_SECRET` and `APP_USERS` from the output into a `.env.local`
+file, and add `NEXTAUTH_URL=http://localhost:3000`. Save the printed passwords
+- they are not shown again.
+
+### 4. Run locally
 ```bash
 npm run dev
 ```
@@ -123,11 +192,16 @@ git push -u origin main
 ```
 
 ### Step 3: Deploy on Vercel
-1. Go to [vercel.com](https://vercel.com)
-2. Click "New Project"
-3. Connect your GitHub repository
+1. Go to [vercel.com/new](https://vercel.com/new)
+2. Import the GitHub repository
+3. Before deploying, open **Environment Variables** and add:
+   - `NEXTAUTH_SECRET` - from `npm run gen-auth`
+   - `APP_USERS` - from `npm run gen-auth`
+   - `NEXTAUTH_URL` - your deployed URL, e.g. `https://team-tracker.vercel.app`
 4. Click "Deploy"
-5. Your app will be live in seconds!
+
+Without `NEXTAUTH_SECRET` and `APP_USERS` the app still builds and serves the
+login page, but nobody can sign in. The server log says which one is missing.
 
 ## Testing Checklist
 

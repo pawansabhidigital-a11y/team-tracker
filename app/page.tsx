@@ -1,8 +1,11 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSession } from 'next-auth/react';
 import Checklist from '@/components/Checklist';
+import Header from '@/components/Header';
 import { clients, teamMembers, steps } from '@/lib/data';
+import { can } from '@/lib/rbac';
 
 interface ChecklistEntry {
   webinarDate: string;
@@ -17,6 +20,14 @@ interface ChecklistEntry {
 }
 
 export default function Home() {
+  const { data: session } = useSession();
+  const role = session?.user?.role;
+
+  const canComplete = can(role, 'checklist:complete');
+  const canNote = can(role, 'checklist:note');
+  const canAssign = can(role, 'checklist:assign');
+  const canReset = can(role, 'checklist:reset');
+
   const [selectedWebinarDate, setSelectedWebinarDate] = useState('');
   const [selectedClient, setSelectedClient] = useState('');
   const [checklist, setChecklist] = useState<ChecklistEntry[]>([]);
@@ -69,6 +80,12 @@ export default function Home() {
   }, [selectedWebinarDate, selectedClient, allChecklists]);
 
   const handleStepUpdate = (stepNumber: number, field: string, value: any) => {
+    // Checked here as well as on the inputs, so a disabled control is not the
+    // only thing standing between a role and an edit it may not make.
+    if (field === 'completed' && !canComplete) return;
+    if (field === 'completedBy' && !canAssign) return;
+    if ((field === 'notes' || field === 'issuesFound') && !canNote) return;
+
     const updatedChecklist = checklist.map((item) => {
       if (item.stepNumber === stepNumber) {
         const updatedItem = { ...item, [field]: value };
@@ -106,6 +123,30 @@ export default function Home() {
     });
   };
 
+  const handleReset = () => {
+    if (!canReset) return;
+    if (!selectedWebinarDate || !selectedClient) return;
+    if (!confirm('Is checklist ke saare steps reset kar dein?')) return;
+
+    const cleared: ChecklistEntry[] = steps.map((step) => ({
+      webinarDate: selectedWebinarDate,
+      clientName: selectedClient,
+      stepNumber: step.number,
+      stepName: step.name,
+      completed: false,
+      completedBy: '',
+      completedAt: '',
+      notes: '',
+      issuesFound: '',
+    }));
+
+    setChecklist(cleared);
+    setAllChecklists({
+      ...allChecklists,
+      [`${selectedWebinarDate}-${selectedClient}`]: cleared,
+    });
+  };
+
   // Calculate completion percentage
   const totalSteps = checklist.length;
   const completedCount = checklist.filter((item) => item.completed).length;
@@ -114,6 +155,8 @@ export default function Home() {
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-6">
       <div className="max-w-6xl mx-auto">
+        <Header />
+
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-4xl font-bold text-gray-800 mb-2">
@@ -173,6 +216,15 @@ export default function Home() {
             <p className="text-sm text-gray-600 mt-3">
               <strong>{completedCount}</strong> of <strong>{totalSteps}</strong> steps completed
             </p>
+
+            {canReset && (
+              <button
+                onClick={handleReset}
+                className="mt-4 text-sm font-semibold text-red-600 hover:text-red-800 border border-red-300 rounded-lg px-4 py-2 hover:bg-red-50 transition-colors"
+              >
+                Reset checklist
+              </button>
+            )}
           </div>
         )}
 
@@ -182,6 +234,9 @@ export default function Home() {
             checklist={checklist}
             teamMembers={teamMembers}
             onStepUpdate={handleStepUpdate}
+            canComplete={canComplete}
+            canNote={canNote}
+            canAssign={canAssign}
           />
         ) : (
           <div className="bg-white rounded-lg shadow-lg p-12 text-center">

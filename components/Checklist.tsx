@@ -24,12 +24,18 @@ interface ChecklistProps {
   checklist: ChecklistEntry[];
   teamMembers: TeamMember[];
   onStepUpdate: (stepNumber: number, field: string, value: any) => void;
+  canComplete: boolean;
+  canNote: boolean;
+  canAssign: boolean;
 }
 
 export default function Checklist({
   checklist,
   teamMembers,
   onStepUpdate,
+  canComplete,
+  canNote,
+  canAssign,
 }: ChecklistProps) {
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set());
 
@@ -51,6 +57,13 @@ export default function Checklist({
         </h2>
       </div>
 
+      {!canComplete && (
+        <div className="bg-amber-50 border-b border-amber-200 px-6 py-3 text-sm text-amber-800">
+          👁️ View-only access &mdash; aapke role ke paas steps update karne ki
+          permission nahi hai.
+        </div>
+      )}
+
       <div className="divide-y divide-gray-200">
         {checklist.map((item) => (
           <div
@@ -66,10 +79,11 @@ export default function Checklist({
                 <input
                   type="checkbox"
                   checked={item.completed}
+                  disabled={!canComplete}
                   onChange={(e) =>
                     onStepUpdate(item.stepNumber, 'completed', e.target.checked)
                   }
-                  className="w-6 h-6 mt-1 text-green-600 rounded focus:ring-2 focus:ring-green-500 cursor-pointer"
+                  className="w-6 h-6 mt-1 text-green-600 rounded focus:ring-2 focus:ring-green-500 cursor-pointer disabled:cursor-not-allowed disabled:opacity-50"
                 />
 
                 {/* Step Details */}
@@ -128,7 +142,7 @@ export default function Checklist({
                       onChange={(e) =>
                         onStepUpdate(item.stepNumber, 'completedBy', e.target.value)
                       }
-                      disabled={!item.completed}
+                      disabled={!item.completed || !canAssign}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                     >
                       <option value="">Select team member...</option>
@@ -138,6 +152,11 @@ export default function Checklist({
                         </option>
                       ))}
                     </select>
+                    {!canAssign && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Sirf Team Lead aur Coordinator assign kar sakte hain.
+                      </p>
+                    )}
                   </div>
 
                   {/* Completed At */}
@@ -164,8 +183,9 @@ export default function Checklist({
                       onChange={(e) =>
                         onStepUpdate(item.stepNumber, 'notes', e.target.value)
                       }
+                      disabled={!canNote}
                       placeholder="Add any notes about this step..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                       rows={2}
                     />
                   </div>
@@ -180,8 +200,9 @@ export default function Checklist({
                       onChange={(e) =>
                         onStepUpdate(item.stepNumber, 'issuesFound', e.target.value)
                       }
+                      disabled={!canNote}
                       placeholder="Describe any issues encountered..."
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent disabled:bg-gray-100 disabled:cursor-not-allowed"
                       rows={2}
                     />
                   </div>
