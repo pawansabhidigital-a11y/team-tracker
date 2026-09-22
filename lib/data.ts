@@ -27,6 +27,8 @@ export const clients = [
   },
 ];
 
+// Keep this list and the team in scripts/gen-auth.mjs in step: the email is
+// what ties a person here to the account they sign in with.
 export const teamMembers = [
   {
     id: 'T001',
@@ -36,15 +38,39 @@ export const teamMembers = [
   },
   {
     id: 'T002',
-    name: 'Yuvraj',
-    role: 'Executive',
-    email: 'yuvraj@sabhi.com',
+    name: 'Aditya Sankhla',
+    role: 'Coordinator',
+    email: 'aditya@sabhi.com',
   },
   {
     id: 'T003',
-    name: 'Priya',
+    name: 'Jatin',
     role: 'Coordinator',
-    email: 'priya@sabhi.com',
+    email: 'jatin@sabhi.com',
+  },
+  {
+    id: 'T004',
+    name: 'Lalita',
+    role: 'Executive',
+    email: 'lalita@sabhi.com',
+  },
+  {
+    id: 'T005',
+    name: 'Khushwant',
+    role: 'Executive',
+    email: 'khushwant@sabhi.com',
+  },
+  {
+    id: 'T006',
+    name: 'Sanu',
+    role: 'Executive',
+    email: 'sanu@sabhi.com',
+  },
+  {
+    id: 'T007',
+    name: 'Minal',
+    role: 'Executive',
+    email: 'minal@sabhi.com',
   },
 ];
 

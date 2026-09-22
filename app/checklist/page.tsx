@@ -98,6 +98,12 @@ export default function Home() {
       if (item.stepNumber === stepNumber) {
         const updatedItem = { ...item, [field]: value };
 
+        // Record who ticked it. Executives cannot use the "Completed By"
+        // dropdown, so without this their completions carry no name at all.
+        if (field === 'completed' && value === true && !item.completedBy && session?.user?.name) {
+          updatedItem.completedBy = session.user.name;
+        }
+
         // Auto-fill timestamp when marked complete
         if (field === 'completed' && value === true && !item.completedAt) {
           updatedItem.completedAt = new Date().toLocaleString('en-IN', {
