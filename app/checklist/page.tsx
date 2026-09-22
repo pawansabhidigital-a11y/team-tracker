@@ -207,7 +207,9 @@ export default function Home() {
               <option value="">Select a client...</option>
               {clients.map((client) => (
                 <option key={client.id} value={client.name}>
-                  {client.name} - {client.coachName}
+                  {client.coachName && client.coachName !== client.name
+                    ? `${client.name} - ${client.coachName}`
+                    : client.name}
                 </option>
               ))}
             </select>

@@ -179,7 +179,9 @@ export default function ClientManager({
                     </span>
                     <h3 className="text-lg font-semibold text-gray-800">{client.name}</h3>
                   </div>
-                  <p className="text-sm text-gray-600 mt-1">Coach: {client.coachName}</p>
+                  {client.coachName && client.coachName !== client.name && (
+                    <p className="text-sm text-gray-600 mt-1">Coach: {client.coachName}</p>
+                  )}
 
                   <dl className="mt-2 text-sm text-gray-500 space-y-0.5">
                     {client.zoomEmail && <dd>📧 {client.zoomEmail}</dd>}

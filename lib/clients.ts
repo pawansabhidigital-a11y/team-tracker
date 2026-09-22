@@ -15,6 +15,51 @@ export interface Client {
 export type ClientDraft = Omit<Client, 'id'>;
 
 const STORAGE_KEY = 'webinar-clients';
+const SEED_VERSION_KEY = 'webinar-clients-seed-version';
+
+/** Bump when lib/data.ts clients change and browsers need to pick them up. */
+const SEED_VERSION = 2;
+
+/** Placeholder clients shipped before the real list; removed on upgrade. */
+const RETIRED_SEED_NAMES = ['ABC Coaching', 'XYZ Academy', 'PQR Institute'];
+
+/**
+ * Seeding only on an empty store would leave every browser that has already
+ * used the app stuck with the old sample clients. This drops those samples and
+ * adds any seed client that is missing, while leaving anything the Team Lead
+ * added alone.
+ */
+function applySeed(stored: Client[]): Client[] {
+  const kept = stored.filter((client) => !RETIRED_SEED_NAMES.includes(client.name));
+  const present = new Set(kept.map((client) => client.name.toLowerCase()));
+  const missing = seedClients.filter((client) => !present.has(client.name.toLowerCase()));
+  return ensureUniqueIds([...kept, ...missing]);
+}
+
+/**
+ * A client the Team Lead added can hold an id that a seed client also uses, so
+ * merging the two lists can produce duplicates. Ids are only React keys and the
+ * basis for the next id, so renumbering the later collision is safe.
+ */
+function ensureUniqueIds(clients: Client[]): Client[] {
+  const taken = new Set<string>();
+
+  return clients.map((client) => {
+    if (!taken.has(client.id)) {
+      taken.add(client.id);
+      return client;
+    }
+
+    let n = 1;
+    let candidate = `C${String(n).padStart(3, '0')}`;
+    while (taken.has(candidate)) {
+      n += 1;
+      candidate = `C${String(n).padStart(3, '0')}`;
+    }
+    taken.add(candidate);
+    return { ...client, id: candidate };
+  });
+}
 
 export const EMPTY_DRAFT: ClientDraft = {
   name: '',
@@ -65,7 +110,20 @@ export function useClients() {
   useEffect(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
-      setClients(saved ? (JSON.parse(saved) as Client[]) : seedClients);
+      const storedVersion = Number(localStorage.getItem(SEED_VERSION_KEY) ?? 0);
+
+      if (!saved) {
+        setClients(seedClients);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(seedClients));
+      } else if (storedVersion < SEED_VERSION) {
+        const merged = applySeed(JSON.parse(saved) as Client[]);
+        setClients(merged);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+      } else {
+        setClients(JSON.parse(saved) as Client[]);
+      }
+
+      localStorage.setItem(SEED_VERSION_KEY, String(SEED_VERSION));
     } catch {
       setClients(seedClients);
     }
