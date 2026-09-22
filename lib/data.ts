@@ -11,6 +11,7 @@ export const clients = [
     whatsappGroup: '',
     landingPage: '',
     zoomEmail: '',
+    notes: '',
   },
   {
     id: 'C002',
@@ -19,6 +20,7 @@ export const clients = [
     whatsappGroup: '',
     landingPage: '',
     zoomEmail: '',
+    notes: '',
   },
   {
     id: 'C003',
@@ -27,6 +29,7 @@ export const clients = [
     whatsappGroup: '',
     landingPage: '',
     zoomEmail: '',
+    notes: '',
   },
   {
     id: 'C004',
@@ -35,6 +38,7 @@ export const clients = [
     whatsappGroup: '',
     landingPage: '',
     zoomEmail: '',
+    notes: '',
   },
   {
     id: 'C005',
@@ -43,6 +47,7 @@ export const clients = [
     whatsappGroup: '',
     landingPage: '',
     zoomEmail: '',
+    notes: '',
   },
   {
     id: 'C006',
@@ -51,6 +56,7 @@ export const clients = [
     whatsappGroup: '',
     landingPage: '',
     zoomEmail: '',
+    notes: '',
   },
   {
     id: 'C007',
@@ -59,6 +65,7 @@ export const clients = [
     whatsappGroup: '',
     landingPage: '',
     zoomEmail: '',
+    notes: '',
   },
   {
     id: 'C008',
@@ -67,6 +74,7 @@ export const clients = [
     whatsappGroup: '',
     landingPage: '',
     zoomEmail: '',
+    notes: '',
   },
   {
     id: 'C009',
@@ -75,6 +83,7 @@ export const clients = [
     whatsappGroup: '',
     landingPage: '',
     zoomEmail: '',
+    notes: '',
   },
   {
     id: 'C010',
@@ -83,6 +92,7 @@ export const clients = [
     whatsappGroup: '',
     landingPage: '',
     zoomEmail: '',
+    notes: '',
   },
   {
     id: 'C011',
@@ -91,6 +101,7 @@ export const clients = [
     whatsappGroup: '',
     landingPage: '',
     zoomEmail: '',
+    notes: '',
   },
 ];
 

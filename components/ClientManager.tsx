@@ -1,6 +1,8 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
+import ClientFields from '@/components/ClientFields';
 import {
   EMPTY_DRAFT,
   validateDraft,
@@ -17,14 +19,6 @@ interface ClientManagerProps {
   onUpdate: (id: string, draft: ClientDraft) => void;
   onDelete: (id: string) => void;
 }
-
-const FIELDS: { key: keyof ClientDraft; label: string; placeholder: string }[] = [
-  { key: 'name', label: 'Client Name *', placeholder: 'ABC Coaching' },
-  { key: 'coachName', label: 'Coach Name *', placeholder: 'Priya Singh' },
-  { key: 'zoomEmail', label: 'Zoom Email', placeholder: 'zoom@abc.com' },
-  { key: 'whatsappGroup', label: 'WhatsApp Group', placeholder: 'https://chat.whatsapp.com/...' },
-  { key: 'landingPage', label: 'Landing Page', placeholder: 'https://abc.com/webinar' },
-];
 
 export default function ClientManager({
   clients,
@@ -118,31 +112,7 @@ export default function ClientManager({
             {editingId ? 'Edit client' : 'New client'}
           </h3>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {FIELDS.map((field) => (
-              <div key={field.key} className={field.key === 'landingPage' ? 'md:col-span-2' : ''}>
-                <label
-                  htmlFor={`client-${field.key}`}
-                  className="block text-sm font-semibold text-gray-700 mb-2"
-                >
-                  {field.label}
-                </label>
-                <input
-                  id={`client-${field.key}`}
-                  type="text"
-                  value={draft[field.key]}
-                  placeholder={field.placeholder}
-                  onChange={(e) => setDraft({ ...draft, [field.key]: e.target.value })}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
-                    errors[field.key] ? 'border-red-400 bg-red-50' : 'border-gray-300'
-                  }`}
-                />
-                {errors[field.key] && (
-                  <p className="text-xs text-red-600 mt-1">{errors[field.key]}</p>
-                )}
-              </div>
-            ))}
-          </div>
+          <ClientFields draft={draft} errors={errors} onChange={setDraft} />
 
           <div className="flex gap-3 mt-5">
             <button
@@ -177,7 +147,12 @@ export default function ClientManager({
                     <span className="inline-block bg-blue-100 text-blue-800 px-2.5 py-0.5 rounded-full text-xs font-semibold">
                       {client.id}
                     </span>
-                    <h3 className="text-lg font-semibold text-gray-800">{client.name}</h3>
+                    <Link
+                      href={`/clients/${client.id}`}
+                      className="text-lg font-semibold text-blue-700 hover:text-blue-900 hover:underline"
+                    >
+                      {client.name}
+                    </Link>
                   </div>
                   {client.coachName && client.coachName !== client.name && (
                     <p className="text-sm text-gray-600 mt-1">Coach: {client.coachName}</p>

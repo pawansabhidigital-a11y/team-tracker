@@ -10,6 +10,8 @@ export interface Client {
   whatsappGroup: string;
   landingPage: string;
   zoomEmail: string;
+  /** Free-form space for anything the other fields do not cover. */
+  notes: string;
 }
 
 export type ClientDraft = Omit<Client, 'id'>;
@@ -18,7 +20,7 @@ const STORAGE_KEY = 'webinar-clients';
 const SEED_VERSION_KEY = 'webinar-clients-seed-version';
 
 /** Bump when lib/data.ts clients change and browsers need to pick them up. */
-const SEED_VERSION = 2;
+const SEED_VERSION = 3;
 
 /** Placeholder clients shipped before the real list; removed on upgrade. */
 const RETIRED_SEED_NAMES = ['ABC Coaching', 'XYZ Academy', 'PQR Institute'];
@@ -33,7 +35,7 @@ function applySeed(stored: Client[]): Client[] {
   const kept = stored.filter((client) => !RETIRED_SEED_NAMES.includes(client.name));
   const present = new Set(kept.map((client) => client.name.toLowerCase()));
   const missing = seedClients.filter((client) => !present.has(client.name.toLowerCase()));
-  return ensureUniqueIds([...kept, ...missing]);
+  return ensureUniqueIds([...kept, ...missing].map(withDefaults));
 }
 
 /**
@@ -67,7 +69,13 @@ export const EMPTY_DRAFT: ClientDraft = {
   whatsappGroup: '',
   landingPage: '',
   zoomEmail: '',
+  notes: '',
 };
+
+/** Clients stored before a field existed come back without it. */
+function withDefaults(client: Client): Client {
+  return { ...EMPTY_DRAFT, ...client };
+}
 
 function nextId(existing: Client[]): string {
   const highest = existing.reduce((max, client) => {
