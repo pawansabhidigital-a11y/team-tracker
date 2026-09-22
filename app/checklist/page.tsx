@@ -34,6 +34,7 @@ export default function Home() {
   const [selectedClient, setSelectedClient] = useState('');
   const [checklist, setChecklist] = useState<ChecklistEntry[]>([]);
   const [allChecklists, setAllChecklists] = useState<Record<string, ChecklistEntry[]>>({});
+  const [storageLoaded, setStorageLoaded] = useState(false);
 
   // Load from localStorage on mount
   useEffect(() => {
@@ -45,12 +46,17 @@ export default function Home() {
         console.error('Failed to load checklists:', e);
       }
     }
+    setStorageLoaded(true);
   }, []);
 
-  // Save to localStorage whenever allChecklists changes
+  // Save to localStorage whenever allChecklists changes.
+  // Guarded on storageLoaded: without it this effect fires on mount while
+  // allChecklists is still the initial {}, overwriting saved progress. If the
+  // page is left before the load re-render lands, that wipe is permanent.
   useEffect(() => {
+    if (!storageLoaded) return;
     localStorage.setItem('webinar-checklists', JSON.stringify(allChecklists));
-  }, [allChecklists]);
+  }, [allChecklists, storageLoaded]);
 
   // Load checklist when date or client changes
   useEffect(() => {
