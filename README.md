@@ -6,6 +6,8 @@ A comprehensive Next.js web application for tracking team accountability in webi
 
 ✅ **Login Required** - Every page is behind a sign-in wall enforced in middleware
 ✅ **Role-Based Access Control** - Team Lead / Coordinator / Executive, each with different rights
+✅ **Dashboard** - Client list, webinar progress and team totals on one page
+✅ **Admin-Only Client Management** - Only the Team Lead can add clients and fill their details
 ✅ **32-Step Webinar Checklist** - Complete workflow from pre-webinar setup to post-webinar documentation
 ✅ **Multiple Clients** - Track separate checklists for different webinar clients
 ✅ **Team Member Tracking** - Assign team members to completed tasks with auto-timestamp
@@ -32,11 +34,15 @@ from the browser.
 
 ### Roles
 
-| Role | Label | Can complete steps | Can add notes | Can assign member | Can reset checklist |
-|---|---|:---:|:---:|:---:|:---:|
-| `admin` | Team Lead | ✅ | ✅ | ✅ | ✅ |
-| `coordinator` | Coordinator | ✅ | ✅ | ✅ | ❌ |
-| `executive` | Executive | ✅ | ✅ | ❌ | ❌ |
+| Role | Label | Complete steps | Add notes | Assign member | Reset checklist | Add/edit clients |
+|---|---|:---:|:---:|:---:|:---:|:---:|
+| `admin` | Team Lead | ✅ | ✅ | ✅ | ✅ | ✅ |
+| `coordinator` | Coordinator | ✅ | ✅ | ✅ | ❌ | ❌ |
+| `executive` | Executive | ✅ | ✅ | ❌ | ❌ | ❌ |
+
+Everyone can *see* the client list. Only `admin` can add, edit or delete a
+client and fill in its details (coach, Zoom email, WhatsApp group, landing
+page).
 
 Permissions live in [`lib/rbac.ts`](lib/rbac.ts). They are applied in two
 places: the controls are disabled in the UI, and `handleStepUpdate` re-checks
@@ -64,11 +70,18 @@ Put the output in `.env.local` for local development, and in **Vercel → Projec
 
 ### Scope of the current setup
 
-Login and RBAC are real and enforced server-side. **Checklist data is not** —
-it still lives in each user's browser `localStorage`, so teammates do not see
-each other's progress and a determined user can edit their own copy. Sharing
-data across the team, and making the record tamper-proof, needs a database and
-API routes. That is a separate piece of work from RBAC.
+Login and RBAC are real and enforced server-side. **The data is not** — both
+the checklists and the client list live in each user's browser
+`localStorage`, so:
+
+- a client the admin adds is only visible in the admin's own browser
+- teammates do not see each other's checklist progress
+- a determined user can edit their own copy
+
+Sharing data across the team, and making the record tamper-proof, needs a
+database and API routes. `lib/clients.ts` is written as the single place that
+reads and writes clients, so swapping its body for API calls is the change
+that makes the list shared. That is a separate piece of work from RBAC.
 
 ## Project Structure
 
@@ -78,17 +91,20 @@ webinar-checklist-app/
 ├── app/
 │   ├── api/auth/[...nextauth]/route.ts  # NextAuth endpoints
 │   ├── login/page.tsx     # Sign-in page
-│   ├── page.tsx           # Main page with date & client selection
+│   ├── page.tsx           # Dashboard (stats, clients, webinar progress)
+│   ├── checklist/page.tsx # The 32-step checklist
 │   ├── layout.tsx         # Root layout with metadata
 │   └── globals.css        # Tailwind CSS imports
 ├── components/
 │   ├── Checklist.tsx      # Checklist display component
-│   ├── Header.tsx         # Signed-in user chip + sign out
+│   ├── ClientManager.tsx  # Client list + add/edit form (admin only)
+│   ├── Header.tsx         # User chip, nav, sign out
 │   └── Providers.tsx      # NextAuth session provider
 ├── lib/
 │   ├── auth.ts            # NextAuth options, user lookup
 │   ├── rbac.ts            # Roles and permissions
-│   └── data.ts            # Sample data (clients, team members, steps)
+│   ├── clients.ts         # Client store + validation
+│   └── data.ts            # Seed data (clients, team members, steps)
 ├── types/
 │   └── next-auth.d.ts     # Adds `role` to the session types
 ├── scripts/

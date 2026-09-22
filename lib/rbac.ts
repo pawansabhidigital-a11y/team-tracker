@@ -12,6 +12,9 @@ export type Permission =
   | 'checklist:assign'
   | 'checklist:reset'
   | 'client:viewAll'
+  | 'client:create'
+  | 'client:edit'
+  | 'client:delete'
   | 'team:viewAll';
 
 const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
@@ -22,6 +25,9 @@ const ROLE_PERMISSIONS: Record<Role, Permission[]> = {
     'checklist:assign',
     'checklist:reset',
     'client:viewAll',
+    'client:create',
+    'client:edit',
+    'client:delete',
     'team:viewAll',
   ],
   coordinator: [
