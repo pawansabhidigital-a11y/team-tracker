@@ -51,25 +51,25 @@ export const teamMembers = [
   {
     id: 'T004',
     name: 'Lalita',
-    role: 'Executive',
+    role: 'Webinar Operator',
     email: 'lalita@sabhi.com',
   },
   {
     id: 'T005',
     name: 'Khushwant',
-    role: 'Executive',
+    role: 'Webinar Operator',
     email: 'khushwant@sabhi.com',
   },
   {
     id: 'T006',
     name: 'Sanu',
-    role: 'Executive',
+    role: 'Webinar Operator',
     email: 'sanu@sabhi.com',
   },
   {
     id: 'T007',
     name: 'Minal',
-    role: 'Executive',
+    role: 'Webinar Operator',
     email: 'minal@sabhi.com',
   },
 ];

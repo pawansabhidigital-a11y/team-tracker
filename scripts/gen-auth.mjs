@@ -15,13 +15,13 @@ const DEFAULT_TEAM = [
   { email: 'pawan@sabhi.com', name: 'Pawan', role: 'admin' },
   { email: 'aditya@sabhi.com', name: 'Aditya Sankhla', role: 'coordinator' },
   { email: 'jatin@sabhi.com', name: 'Jatin', role: 'coordinator' },
-  { email: 'lalita@sabhi.com', name: 'Lalita', role: 'executive' },
-  { email: 'khushwant@sabhi.com', name: 'Khushwant', role: 'executive' },
-  { email: 'sanu@sabhi.com', name: 'Sanu', role: 'executive' },
-  { email: 'minal@sabhi.com', name: 'Minal', role: 'executive' },
+  { email: 'lalita@sabhi.com', name: 'Lalita', role: 'operator' },
+  { email: 'khushwant@sabhi.com', name: 'Khushwant', role: 'operator' },
+  { email: 'sanu@sabhi.com', name: 'Sanu', role: 'operator' },
+  { email: 'minal@sabhi.com', name: 'Minal', role: 'operator' },
 ];
 
-const VALID_ROLES = ['admin', 'coordinator', 'executive'];
+const VALID_ROLES = ['admin', 'coordinator', 'operator'];
 
 function parseArgs(argv) {
   if (argv.length === 0) return DEFAULT_TEAM;

@@ -41,3 +41,4 @@ next-env.d.ts
 vercel-credentials.local.txt
 vercel-import.env
 COPY-THIS-SECRET.txt
+COPY-THIS-APP_USERS.txt

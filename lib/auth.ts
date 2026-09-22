@@ -1,7 +1,7 @@
 import type { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
-import { isRole, type Role } from '@/lib/rbac';
+import { normalizeRole, type Role } from '@/lib/rbac';
 
 interface AppUser {
   email: string;
@@ -58,11 +58,15 @@ function loadUsers(): AppUser[] {
     if (typeof entry !== 'object' || entry === null) continue;
     const { email, name, role, passwordHash } = entry as Record<string, unknown>;
 
+    // normalizeRole, not isRole: a stored "executive" has to become "operator"
+    // here, or the permission lookup gets a role it does not know.
+    const normalizedRole = normalizeRole(role);
+
     if (
       typeof email !== 'string' ||
       typeof name !== 'string' ||
       typeof passwordHash !== 'string' ||
-      !isRole(role)
+      !normalizedRole
     ) {
       console.error('[auth] Skipping malformed APP_USERS entry.');
       continue;
@@ -77,7 +81,7 @@ function loadUsers(): AppUser[] {
       continue;
     }
 
-    users.push({ email: email.toLowerCase(), name, role, passwordHash });
+    users.push({ email: email.toLowerCase(), name, role: normalizedRole, passwordHash });
   }
 
   return users;
@@ -115,14 +119,17 @@ export const authOptions: NextAuthOptions = {
   ],
   callbacks: {
     jwt({ token, user }) {
-      if (user && isRole(user.role)) {
-        token.role = user.role;
+      const role = user && normalizeRole(user.role);
+      if (role) {
+        token.role = role;
       }
       return token;
     },
     session({ session, token }) {
-      if (session.user && isRole(token.role)) {
-        session.user.role = token.role;
+      // Normalized again so a JWT minted before the rename still resolves.
+      const role = normalizeRole(token.role);
+      if (session.user && role) {
+        session.user.role = role;
       }
       return session;
     },
